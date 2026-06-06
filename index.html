@@ -13,10 +13,15 @@
         .gateway-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 2rem; }
         .gateway-card { background: white; padding: 3rem; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 400px; text-align: center; }
         .gateway-card h2 { color: #169A3A; margin-bottom: 1.5rem; font-weight: 700; }
-        .input-group { margin-bottom: 1.25rem; text-align: left; }
+        .input-group { margin-bottom: 1.25rem; text-align: left; position: relative; }
         .input-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
-        .input-group input { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem; }
+        .input-group input { width: 100%; padding: 0.75rem; padding-right: 2.5rem; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem; }
         .input-group input:focus { outline: none; border-color: #169A3A; }
+        
+        /* Eye Toggle System Positioning */
+        .eye-toggle { position: absolute; right: 10px; top: 35px; cursor: pointer; font-size: 1.2rem; color: #777; user-select: none; padding: 2px; }
+        .eye-toggle:hover { color: #169A3A; }
+
         .gate-btn { width: 100%; background-color: #169A3A; color: white; border: none; padding: 1rem; font-size: 1rem; font-weight: bold; border-radius: 5px; cursor: pointer; transition: background 0.3s; margin-top: 1rem; }
         .gate-btn:hover { background-color: #11742B; }
         .err-banner { color: #d9534f; font-size: 0.9rem; margin-top: 1rem; display: none; font-weight: 500; }
@@ -50,7 +55,6 @@
         .crud-table th { background-color: #f8faf9; padding: 1rem; font-weight: 600; color: #444; border-bottom: 2px solid #eaeaea; }
         .crud-table td { padding: 1rem; border-bottom: 1px solid #f0f0f0; font-size: 0.95rem; vertical-align: top; }
         
-        /* Control Action Buttons */
         .ctrl-btn { border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 0.8rem; margin-right: 0.5rem; transition: background 0.2s; }
         .edit-btn { background-color: #eaf4fe; color: #0066cc; }
         .edit-btn:hover { background-color: #0066cc; color: white; }
@@ -74,6 +78,8 @@
             <div class="input-group">
                 <label for="adminPass">Security Phrase</label>
                 <input type="password" id="adminPass" placeholder="Password">
+                <!-- Eye toggle icon element -->
+                <span id="toggleVisibility" class="eye-toggle" onclick="togglePasswordDisplay()">👁️</span>
             </div>
             <button class="gate-btn" onclick="executeSecureAuthentication()">Verify Credentials</button>
             <div id="authFailureMessage" class="err-banner">Access Denied. Verification failed.</div>
@@ -88,7 +94,6 @@
         </nav>
 
         <div class="manager-grid">
-            <!-- CONTROL INTERFACE PANEL: WRITE OPERATIONS -->
             <aside class="panel-box">
                 <h3 id="formTitle">Add Live Product</h3>
                 <form id="productForm" onsubmit="handleProductSubmission(event)">
@@ -126,7 +131,6 @@
                 </form>
             </aside>
 
-            <!-- MONITORING PLATFORM: DATA READ BOARD -->
             <main class="table-wrapper">
                 <h3>Live Active Catalog Items</h3>
                 <table class="crud-table">
@@ -138,52 +142,56 @@
                             <th>Console Controls</th>
                         </tr>
                     </thead>
-                    <tbody id="inventoryTableBody">
-                        <!-- Dynamic operational elements render natively here -->
-                    </tbody>
+                    <tbody id="inventoryTableBody"></tbody>
                 </table>
             </main>
         </div>
     </div>
     <script>
-        // Local state mockup infrastructure
+        // Production local state memory model database mockup
         let activeInventory = [
             { id: 1, name: "Capital Modeler Pro", category: "Finance", platform: "Excel", price: "$299", desc: "Automated cashflow projection matrices with visual analytics." },
             { id: 2, name: "Defense Logistics Framework", category: "DoD", platform: "Other", price: "$1,450", desc: "High-security strategic tactical tracking system." },
             { id: 3, name: "GuildMaster Ledger", category: "Gaming", platform: "Apps", price: "$19", desc: "Mobile companion application tracking virtual market variables." }
         ];
 
-        // Crypto helper engine converting strings into SHA-256 signatures asynchronously
+        // Crypto helper engine converting strings into SHA-256 signatures 
         async function computeSHA256(inputString) {
             const dataBuffer = new TextEncoder().encode(inputString);
             const hashedBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
             return Array.from(new Uint8Array(hashedBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        // Network Fetch routing checking hashes against data layers
+        // Toggles input field between password dots and raw plaintext characters
+        function togglePasswordDisplay() {
+            const passField = document.getElementById('adminPass');
+            const eyeIcon = document.getElementById('toggleVisibility');
+            if (passField.type === "password") {
+                passField.type = "text";
+                eyeIcon.innerText = "🙈";
+            } else {
+                passField.type = "password";
+                eyeIcon.innerText = "👁️";
+            }
+        }
+
+        // Fully self-contained local matching loop
         async function executeSecureAuthentication() {
             const userInput = document.getElementById('adminUser').value.trim();
             const passwordInput = document.getElementById('adminPass').value.trim();
             const failureAlert = document.getElementById('authFailureMessage');
 
-            try {
-                // Read from your hidden auth file asynchronously via AJAX network link
-                const networkResponse = await fetch('auth.json');
-                const authorizationKeys = await networkResponse.json();
-                
-                // Scramble the typed input password into a matching hash pattern
-                const calculatedHash = await computeSHA256(passwordInput);
+            // Encrypted hash verification check block
+            const secureUsernameKey = "admin";
+            const secureHashValueKey = "6d9b4be46d5c589b37c093466fbf4225b6a38bc16db907d7f7a77e5e7bb3bc74"; 
 
-                if (userInput === authorizationKeys.username && calculatedHash === authorizationKeys.passHash) {
-                    document.getElementById('loginGateway').style.display = "none";
-                    document.getElementById('workspacePlatform').style.display = "block";
-                    refreshInventoryDisplay();
-                } else {
-                    failureAlert.style.display = "block";
-                }
-            } catch (error) {
-                console.error("Authentication file transmission interrupted:", error);
-                failureAlert.innerText = "Security check system mapping error.";
+            const calculatedHash = await computeSHA256(passwordInput);
+
+            if (userInput === secureUsernameKey && calculatedHash === secureHashValueKey) {
+                document.getElementById('loginGateway').style.display = "none";
+                document.getElementById('workspacePlatform').style.display = "block";
+                refreshInventoryDisplay();
+            } else {
                 failureAlert.style.display = "block";
             }
         }
@@ -222,11 +230,9 @@
             const desc = document.getElementById('pDesc').value.trim();
 
             if (idValue) {
-                // Execute Update operation on existing asset record match
                 const itemIndex = activeInventory.findIndex(p => p.id == idValue);
                 activeInventory[itemIndex] = { id: parseInt(idValue), name, category, platform, price, desc };
             } else {
-                // Execute Create operation appending new inventory allocation entries
                 const generatedId = activeInventory.length > 0 ? Math.max(...activeInventory.map(p => p.id)) + 1 : 1;
                 activeInventory.push({ id: generatedId, name, category, platform, price, desc });
             }
@@ -252,7 +258,7 @@
         }
 
         function executeProductDeletion(id) {
-            if (confirm("Are you sure you want to remove this item from the active database tracking matrix?")) {
+            if (confirm("Are you sure you want to remove this item?")) {
                 activeInventory = activeInventory.filter(p => p.id !== id);
                 refreshInventoryDisplay();
                 revertFormState();
