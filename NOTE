@@ -1,3 +1,4 @@
 Plaintext values are safely masked in standard Base64 format to hide them from View Source
 "admin" encoded is: YWRtaW4=
 "Exceltation2026!" encoded is: RXhjZWx0YXRpb24yMDI2IQ==
+Couldn't figure out auth.json for now...
